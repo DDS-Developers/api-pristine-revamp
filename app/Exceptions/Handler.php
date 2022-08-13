@@ -46,6 +46,31 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        return parent::render($request, $exception);
+        // return parent::render($request, $exception);
+        $code = 500;
+        $message = $exception->getMessage();
+        if (
+            $exception instanceof \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException ||
+            $exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+        ) {
+            return parent::render($request, $exception);
+            $message = 'Route Not Found';
+        } else if ($exception instanceof \Illuminate\Validation\ValidationException) {
+            $code = 422;
+            $message = [];
+            foreach ($exception->errors() as $ky => $err) {
+                $message[$ky] = $err[0];
+            }
+        } else if (str_contains($message, 'No query results for model')) {
+            $code = 404;
+            $message = 'Data Not Found';
+        } else if ($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+            $code = $exception->getStatusCode();
+        }
+        return response()->json([
+            'code' => $code,
+            'message' => $message,
+            'result' => NULL
+        ], $code);
     }
 }
