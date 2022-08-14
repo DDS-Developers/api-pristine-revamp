@@ -27,6 +27,6 @@ class BandungSubmissionMail extends Mailable
      */
     public function build()
     {
-        return $this->from('customer@pristineofficial.com')->view('mails.bandung_submission');
+        return $this->from(env('MAIL_USERNAME'))->view('mails.bandung_submission');
     }
 }

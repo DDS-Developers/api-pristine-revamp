@@ -132,10 +132,4 @@ return [
     */
 
     'log_channel' => env('MAIL_LOG_CHANNEL'),
-
-    // Local domain
-
-    'local_domain' => env('MAIL_HOST', 'mail.dahayudigital.id'),
-
-    //
 ];
