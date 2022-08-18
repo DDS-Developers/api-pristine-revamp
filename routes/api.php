@@ -14,6 +14,9 @@ use App\Http\Controllers\LocationController;
 |
 */
 
+Route::get('/', function () {
+    return 'API';
+});
 // Bandung Microsite Submission
 Route::post('/bandung_submission', 'BandungSubmissionController@create');
 
