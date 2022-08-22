@@ -18,10 +18,11 @@ class CreateBandungSubmissionsTable extends Migration
             $table->string('name');
             $table->string('nik');
             $table->string('email');
+            $table->string('city');
             $table->string('postal_code');
             $table->text('address');
             $table->string('phone');
-            $table->string('voucher_code');
+            $table->string('unique_code')->nullable();
             $table->timestamps();
         });
     }

@@ -8,5 +8,5 @@ class BandungSubmission extends Model
 {
     protected $table = 'bandung_submissions';
     protected $primaryKey = 'id';
-    protected $fillable = ['name', 'nik', 'email', 'postal_code', 'address', 'phone', 'voucher_code'];
+    protected $fillable = ['name', 'nik', 'email', 'city', 'postal_code', 'address', 'phone', 'unique_code'];
 }

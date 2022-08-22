@@ -27,10 +27,10 @@ class BandungSubmissionRequest extends FormRequest
             'name' => 'required',
             'nik' => 'required|unique:bandung_submissions',
             'email' => 'required|unique:bandung_submissions|email',
+            'city' => 'required',
             'postal_code' => 'required',
             'address' => 'required',
             'phone' => 'required|unique:bandung_submissions',
-            'voucher_code' => 'required'
         ];
     }
 
@@ -43,11 +43,11 @@ class BandungSubmissionRequest extends FormRequest
             'email.required' => 'Silakan isi email anda.',
             'email.email' => 'Silakan isi email yang valid.',
             'email.unique' => 'Email yang sama sudah terdaftar.',
+            'city.required' => 'Silakan isi kota anda.',
             'postal_code.required' => 'Silakan isi kode pos anda.',
             'address.required' => 'Silakan isi alamat anda.',
             'phone.required' => 'Silakan isi nomor handphone anda.',
             'phone.unique' => 'Nomor handphone yang sama sudah terdaftar.',
-            'voucher_code.required' => 'Silakan isi kode voucher anda.',
         ];
     }
 }
