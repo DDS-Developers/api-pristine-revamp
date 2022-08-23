@@ -18,7 +18,10 @@ Route::get('/', function () {
     return 'API';
 });
 // Bandung Microsite Submission
-Route::post('/bandung_submission', 'BandungSubmissionController@create');
+Route::group(['prefix' => 'bandung_submission'], function () {
+    Route::get('/generate_token', 'BandungSubmissionController@generateToken');
+    Route::post('/', 'BandungSubmissionController@create');
+});
 
 //
 
