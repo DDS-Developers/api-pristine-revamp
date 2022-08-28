@@ -46,6 +46,17 @@ class BandungSubmissionController extends Controller
             $token->is_used = true;
             $token->save();
 
+            $submissionTotal = BandungSubmission::count();
+
+            if ($submissionTotal > 1500) {
+                $response = [
+                    'message' => 'Mohon maaf, kuota peserta untuk acara ini sudah terpenuhi. Sampai jumpa di acara selanjutnya!',
+                    'code' => 400
+                ];
+
+                return response()->json($response, 400);
+            }
+
             $submission = new BandungSubmission();
             $submission->fill($data);
             $submission->save();
