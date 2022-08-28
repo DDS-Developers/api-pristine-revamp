@@ -89,11 +89,18 @@ class LocationController extends Controller
 
     public function subDistrict(Request $request)
     {
-        $validated = $request->validate([
-            'district_id' => 'required|exists:district,id',
-        ]);
+        // $validated = $request->validate([
+        //     'district_id' => 'required|exists:district,id',
+        // ]);
         try {
-            $data = SubDistrict::where('district_id', $request->district_id)
+            $data = SubDistrict::when($request->has('district_id'), function ($q) use ($request) {
+                $q->where('district_id', $request->district_id);
+            })
+                ->when($request->has('city_id'), function ($q) use ($request) {
+                    $q->whereHas('district', function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    });
+                })
                 ->when($request->has('id'), function ($q) use ($request) {
                     $q->where('id', $request->id);
                 })->when($request->has('name'), function ($q) use ($request) {
@@ -101,7 +108,10 @@ class LocationController extends Controller
                         ->orWhere('name_en', 'like', '%' . $request->name . '%');
                 });
 
-            if ($request->has('all') && $request->all == true) {
+            if (
+                ($request->has('all') && $request->all == true) ||
+                (isset($request->city_id) || isset($request->district_id))
+            ) {
                 $data = $data->get();
             } else {
                 $data = $data->paginate(10);

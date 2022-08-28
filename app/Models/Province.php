@@ -8,4 +8,9 @@ class Province extends Model
 {
     protected $table = 'province';
     protected $guarded  = [];
+
+    public function city()
+    {
+        return $this->hasMany(City::class, 'province_id', 'id');
+    }
 }
