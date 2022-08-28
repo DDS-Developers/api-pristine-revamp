@@ -15,19 +15,16 @@ use App\Http\Controllers\LocationController;
 */
 
 Route::get('/', function () {
-    return 'API';
+    return 'Pristine Official API';
 });
+
 // Bandung Microsite Submission
 Route::group(['prefix' => 'bandung_submission'], function () {
     Route::get('/generate_token', 'BandungSubmissionController@generateToken');
+    Route::get('/get_total', 'BandungSubmissionController@getTotal');
     Route::post('/', 'BandungSubmissionController@create');
 });
-
 //
-
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 
 
 Route::group(['prefix' => 'location'], function () {

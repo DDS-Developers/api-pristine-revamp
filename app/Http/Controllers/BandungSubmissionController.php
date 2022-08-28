@@ -46,17 +46,6 @@ class BandungSubmissionController extends Controller
             $token->is_used = true;
             $token->save();
 
-            $submissionTotal = BandungSubmission::count();
-
-            if ($submissionTotal > 1500) {
-                $response = [
-                    'message' => 'Mohon maaf, kuota peserta untuk acara ini sudah terpenuhi. Sampai jumpa di acara selanjutnya!',
-                    'code' => 400
-                ];
-
-                return response()->json($response, 400);
-            }
-
             $submission = new BandungSubmission();
             $submission->fill($data);
             $submission->save();
@@ -70,8 +59,6 @@ class BandungSubmissionController extends Controller
             $newSubmission->refresh();
 
             $responseData = $newSubmission->toArray();
-            $responseData['nik'] = Crypt::decryptString($newSubmission->nik);
-            $responseData['phone'] = Crypt::decryptString($newSubmission->phone);
 
             Mail::to($request->email)->queue(new BandungSubmissionMail());
 
@@ -80,7 +67,7 @@ class BandungSubmissionController extends Controller
             $response = [
                 'message' => 'Success.',
                 'code' => 200,
-                'data' => $responseData
+                'result' => $responseData
             ];
 
             return response()->json($response);
@@ -112,7 +99,9 @@ class BandungSubmissionController extends Controller
             $response = [
                 'code' => 200,
                 'message' => 'Success.',
-                'token' => $randomString
+                'result' => [
+                    'token' => $randomString
+                ]
             ];
 
             return response()->json($response);
@@ -122,6 +111,29 @@ class BandungSubmissionController extends Controller
             $response = [
                 'code' => 500,
                 'message' => $e->getMessage(),
+            ];
+
+            return response()->json($response, 500);
+        }
+    }
+
+    public function getTotal()
+    {
+        try {
+            $total = BandungSubmission::count();
+            $response = [
+                'code' => 200,
+                'message' => 'Success.',
+                'result' => [
+                    'total' => $total
+                ]
+            ];
+
+            return response()->json($response);
+        } catch (Exception $e) {
+            $response = [
+                'code' => 500,
+                'message' => $e->getMessage()
             ];
 
             return response()->json($response, 500);
