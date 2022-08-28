@@ -31,6 +31,7 @@ class BandungSubmissionRequest extends FormRequest
             'postal_code' => 'required',
             'address' => 'required',
             'phone' => 'required|unique:bandung_submissions',
+            'token' => 'required',
         ];
     }
 
@@ -48,6 +49,7 @@ class BandungSubmissionRequest extends FormRequest
             'address.required' => 'Silakan isi alamat anda.',
             'phone.required' => 'Silakan isi nomor handphone anda.',
             'phone.unique' => 'Nomor handphone yang sama sudah terdaftar.',
+            'token.required' => 'Silakan isi token anda.',
         ];
     }
 }
