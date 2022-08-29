@@ -23,6 +23,7 @@ class CreateBandungSubmissionsTable extends Migration
             $table->text('address');
             $table->string('phone');
             $table->string('unique_code')->nullable();
+            $table->boolean('has_checked_in')->default(false);
             $table->timestamps();
         });
     }

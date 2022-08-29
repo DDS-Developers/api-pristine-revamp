@@ -12,18 +12,20 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request)
     {
-
         try {
             $user = User::where([
                 'email' => $request->email,
             ])->firstOrFail();
+
             if (Hash::check($request->password, $user->password)) {
                 $token = auth()->attempt([
                     'email' => $user->email,
                     'password' => $request->password
                 ]);
+
                 return AuthTransformer::login($user, $token);
             }
+
             throw new \Exception('Wrong Password');
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());

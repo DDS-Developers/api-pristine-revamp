@@ -23,17 +23,16 @@ Route::group(['prefix' => 'bandung_submission'], function () {
     Route::get('/generate_token', 'BandungSubmissionController@generateToken');
     Route::get('/get_total', 'BandungSubmissionController@getTotal');
     Route::post('/', 'BandungSubmissionController@create');
+
+    Route::group(['middleware' => 'auth'], function () {
+        Route::post('/event_checkin', 'BandungSubmissionController@eventCheckin');
+    });
 });
 //
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 Route::group(['prefix' => 'admin'], function () {
-    Route::post('login', 'AuthController@login');
+    Route::post('login', 'AuthController@login')->name('login');
 });
-
-
 
 Route::group(['prefix' => 'location'], function () {
     Route::get('province', [LocationController::class, 'province']);

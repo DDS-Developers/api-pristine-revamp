@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\BandungSubmission;
-use App\BandungSubmissionToken;
-use App\Http\Requests\BandungSubmissionRequest;
+use App\Models\BandungSubmission;
+use App\Models\BandungSubmissionToken;
+use App\Http\Requests\Bandung\BandungSubmissionRequest;
+use App\Http\Requests\Bandung\EventCheckinRequest;
 use App\Mail\BandungSubmissionMail;
 use Exception;
 use Illuminate\Support\Facades\Crypt;
@@ -26,21 +27,11 @@ class BandungSubmissionController extends Controller
             $token = BandungSubmissionToken::where('token', $data['token'])->first();
 
             if ($token == null) {
-                $response = [
-                    'code' => 400,
-                    'message' => 'Formulir anda tidak dapat diproses.',
-                ];
-
-                return response()->json($response, 400);
+                throw new Exception('Formulir anda tidak dapat diproses.');
             }
 
             if ($token->is_used) {
-                $response = [
-                    'code' => 400,
-                    'message' => 'Formulir anda sudah terdaftar.',
-                ];
-
-                return response()->json($response, 400);
+                throw new Exception('Formulir anda sudah terdaftar.');
             }
 
             $token->is_used = true;
@@ -60,7 +51,7 @@ class BandungSubmissionController extends Controller
 
             $responseData = $newSubmission->toArray();
 
-            Mail::to($request->email)->queue(new BandungSubmissionMail());
+            Mail::to($request->email)->queue(new BandungSubmissionMail($newSubmission));
 
             DB::commit();
 
@@ -74,12 +65,7 @@ class BandungSubmissionController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
-            $response = [
-                'message' => $e->getMessage(),
-                'code' => 500,
-            ];
-
-            return response()->json($response, 500);
+            throw new Exception($e->getMessage());
         }
     }
 
@@ -108,12 +94,7 @@ class BandungSubmissionController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
-            $response = [
-                'code' => 500,
-                'message' => $e->getMessage(),
-            ];
-
-            return response()->json($response, 500);
+            throw new Exception($e->getMessage());
         }
     }
 
@@ -131,12 +112,40 @@ class BandungSubmissionController extends Controller
 
             return response()->json($response);
         } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public function eventCheckin(EventCheckinRequest $request)
+    {
+        return auth()->user()->role;
+        DB::beginTransaction();
+
+        try {
+            $submission = BandungSubmission::where('unique_code', $request->unique_code)->where('has_checked_in', false)->first();
+
+            if ($submission == null) {
+                throw new Exception('Unique Code tidak ditemukan dalam sistem.');
+            }
+
+            $submission->has_checked_in = true;
+            $submission->save();
+
+            DB::commit();
+
+            $submissionArray = $submission->fresh()->makeVisible('nik')->makeVisible('phone')->toArray();
+            $submissionArray['nik'] = Crypt::decryptString($submissionArray['nik']);
+            $submissionArray['phone'] = Crypt::decryptString($submissionArray['phone']);
+
             $response = [
-                'code' => 500,
-                'message' => $e->getMessage()
+                'code' => 200,
+                'message' => 'Sukses melakukan check-in.',
+                'result' => $submissionArray
             ];
 
-            return response()->json($response, 500);
+            return response()->json($response);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
     }
 }
