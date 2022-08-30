@@ -35,6 +35,6 @@ class BandungSubmissionMail extends Mailable
             $mailUsername = 'customer@pristineofficial.com';
         }
 
-        return $this->from($mailUsername)->view('mails.bandung_submission');
+        return $this->from($mailUsername)->subject("Pristime! It's Pristine8.6+ Time")->view('mails.bandung_submission');
     }
 }
