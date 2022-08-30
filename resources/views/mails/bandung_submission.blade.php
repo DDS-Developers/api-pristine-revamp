@@ -1,3 +1,7 @@
+<div style="margin-bottom: 1.5rem; max-width: 1200px; max-height: 675px; margin: 0 auto;">
+    <img src="{{ url('/images/pristime/banners/' . $submission->unique_code . '.jpg') }}" alt="Pristime Email Banner"
+        style="max-width: 100%; height: auto;">
+</div>
 <div style="margin-bottom: 1.5rem">
     <h3 style="text-align:center; margin-bottom: 0">UNIQUE CODE:</h3>
     <h1 style="text-align:center; margin-top: 0">{{ $submission->unique_code }}</h1>

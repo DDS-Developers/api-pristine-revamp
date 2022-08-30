@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Intervention\Image\Facades\Image;
 
 class BandungSubmissionController extends Controller
 {
@@ -49,11 +50,28 @@ class BandungSubmissionController extends Controller
             $newSubmission->save();
             $newSubmission->refresh();
 
-            $responseData = $newSubmission->toArray();
+            $newBanner = Image::make(public_path('images/pristime/pristime-email-banner.jpg'));
+            $newBanner->text($newSubmission->unique_code, 300, 190, function ($font) {
+                $font->file(public_path('fonts/Quicksand-Bold.ttf'));
+                $font->size(32);
+                $font->color('#2eb5a9');
+                $font->align('center');
+                $font->valign('middle');
+            });
+            $newBanner->text($newSubmission->name, 300, 340, function ($font) {
+                $font->file(public_path('fonts/Quicksand-Bold.ttf'));
+                $font->size(64);
+                $font->color('#2eb5a9');
+                $font->align('center');
+                $font->valign('middle');
+            });
+            $newBanner->save(public_path('images/pristime/banners/' . $uniqueCode . '.jpg'));
 
             Mail::to($request->email)->queue(new BandungSubmissionMail($newSubmission));
 
             DB::commit();
+
+            $responseData = $newSubmission->toArray();
 
             $response = [
                 'message' => 'Success.',
