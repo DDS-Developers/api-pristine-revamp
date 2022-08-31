@@ -8,6 +8,7 @@ use App\Http\Requests\Bandung\BandungSubmissionRequest;
 use App\Http\Requests\Bandung\EventCheckinRequest;
 use App\Mail\BandungSubmissionMail;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -162,6 +163,21 @@ class BandungSubmissionController extends Controller
             ];
 
             return response()->json($response);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public function downloadResultImage(Request $request)
+    {
+        try {
+            if ($request->has('result') == false) {
+                throw new Exception('Please provide result.');
+            }
+
+            $filePath = public_path('images/pristime/results/RESULT-SI-' . $request->result . '.png');
+
+            return response()->download($filePath);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
