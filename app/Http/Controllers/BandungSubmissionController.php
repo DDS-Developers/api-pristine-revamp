@@ -39,6 +39,12 @@ class BandungSubmissionController extends Controller
             $token->is_used = true;
             $token->save();
 
+            $total = BandungSubmission::count();
+
+            if ($total > 1500) {
+                throw new Exception('Mohon maaf kuota telah habis.');
+            }
+
             $submission = new BandungSubmission();
             $submission->fill($data);
             $submission->save();
