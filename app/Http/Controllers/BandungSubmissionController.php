@@ -185,7 +185,7 @@ class BandungSubmissionController extends Controller
             $fileName = 'RESULT-SI-' . $request->result . '.png';
             $headers = [
                 'Content-Description' => 'File Transfer',
-                'Content-Type' => mime_content_type($fileName),
+                'Content-Type' => 'image/png',
                 'Content-Transfer-Encoding' => 'binary',
                 'Connection' => 'Keep-Alive',
                 'Expires' => '0',
