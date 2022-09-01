@@ -23,6 +23,7 @@ Route::group(['prefix' => 'bandung_submission'], function () {
     Route::get('/generate_token', 'BandungSubmissionController@generateToken');
     Route::get('/get_total', 'BandungSubmissionController@getTotal');
     Route::get('/download_result_image', 'BandungSubmissionController@downloadResultImage');
+    Route::get('/social_media_redirect', 'BandungSubmissionController@socialMediaRedirect');
     Route::post('/', 'BandungSubmissionController@create');
 
     Route::group(['middleware' => 'auth'], function () {

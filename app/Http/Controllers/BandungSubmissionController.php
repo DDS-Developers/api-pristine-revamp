@@ -198,4 +198,21 @@ class BandungSubmissionController extends Controller
             throw new Exception($e->getMessage());
         }
     }
+
+    public function socialMediaRedirect(Request $request)
+    {
+        if ($request->has('target') == false) {
+            throw new Exception('Target not available.');
+        }
+
+        switch ($request->target) {
+            case 'instagram':
+                $url = 'https://instagram.com';
+                break;
+            default:
+                $url = 'https://facebook.com';
+        }
+
+        return redirect($url);
+    }
 }
