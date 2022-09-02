@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
@@ -182,15 +183,14 @@ class BandungSubmissionController extends Controller
                 throw new Exception('Please provide result.');
             }
 
-            $filePath = public_path('images/pristime/results/RESULT-SI-' . $request->result . '.png');
             $fileName = 'RESULT-SI-' . $request->result . '.png';
-            $headers = [
-                'Content-Type' => 'image/png',
-                'Content-Disposition' => 'attachment; filename=' . $fileName,
-            ];
+            $filePath = public_path('images/pristime/results/' . $fileName);
 
-            // return response()->download($filePath, $fileName, $headers);
-            return Response::make(file_get_contents($filePath), 200, $headers);
+
+            header('Content-Type: image/png');
+            header('Content-Disposition: attachment; filename=' . $fileName);
+
+            return readfile($filePath);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
