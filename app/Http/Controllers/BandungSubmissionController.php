@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
@@ -184,10 +185,12 @@ class BandungSubmissionController extends Controller
             $filePath = public_path('images/pristime/results/RESULT-SI-' . $request->result . '.png');
             $fileName = 'RESULT-SI-' . $request->result . '.png';
             $headers = [
-                'Content-Type' => 'application/octet-stream',
+                'Content-Type' => 'image/png',
+                'Content-Disposition' => 'attachment; filename=' . $fileName,
             ];
 
-            return response()->download($filePath, $fileName, $headers);
+            // return response()->download($filePath, $fileName, $headers);
+            return Response::make(file_get_contents($filePath), 200, $headers);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
