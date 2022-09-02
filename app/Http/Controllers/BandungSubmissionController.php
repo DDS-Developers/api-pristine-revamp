@@ -187,10 +187,10 @@ class BandungSubmissionController extends Controller
             $filePath = public_path('images/pristime/results/' . $fileName);
 
 
-            header('Content-Type: image/png');
+            header('Content-Type: application/force-download');
             header('Content-Disposition: attachment; filename=' . $fileName);
-
-            return readfile($filePath);
+            header('Content-Transfer-Encoding: binary');
+            readfile($filePath);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
