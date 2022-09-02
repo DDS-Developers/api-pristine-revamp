@@ -184,13 +184,7 @@ class BandungSubmissionController extends Controller
             $filePath = public_path('images/pristime/results/RESULT-SI-' . $request->result . '.png');
             $fileName = 'RESULT-SI-' . $request->result . '.png';
             $headers = [
-                'Content-Description' => 'File Transfer',
-                'Content-Type' => 'image/png',
-                'Content-Transfer-Encoding' => 'binary',
-                'Connection' => 'Keep-Alive',
-                'Expires' => '0',
-                'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-                'Pragma' => 'public',
+                'Content-Type' => 'application/octet-stream',
             ];
 
             return response()->download($filePath, $fileName, $headers);
