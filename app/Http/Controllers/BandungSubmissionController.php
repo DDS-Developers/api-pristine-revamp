@@ -184,7 +184,6 @@ class BandungSubmissionController extends Controller
 
             $fileName = 'RESULT-SI-' . $request->result . '.png';
             $filePath = public_path('images/pristime/results/' . $fileName);
-            $fileSize = File::size($filePath);
             $base64 = base64_encode(file_get_contents($filePath));
             $response = [
                 'code' => 200,
@@ -194,11 +193,8 @@ class BandungSubmissionController extends Controller
                     'filename' => $fileName
                 ]
             ];
-            $headers = [
-                'Content-Length' => $fileSize
-            ];
 
-            return response()->json($response, 200, $headers);
+            return response()->json($response);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
