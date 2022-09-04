@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
@@ -183,8 +184,8 @@ class BandungSubmissionController extends Controller
 
             $fileName = 'RESULT-SI-' . $request->result . '.png';
             $filePath = public_path('images/pristime/results/' . $fileName);
+            $fileSize = File::size($filePath);
             $base64 = base64_encode(file_get_contents($filePath));
-
             $response = [
                 'code' => 200,
                 'message' => 'Success.',
@@ -193,8 +194,11 @@ class BandungSubmissionController extends Controller
                     'filename' => $fileName
                 ]
             ];
+            $headers = [
+                'Content-Length' => $fileSize
+            ];
 
-            return response()->json($response);
+            return response()->json($response, 200, $headers);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
