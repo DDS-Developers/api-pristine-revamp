@@ -12,8 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
@@ -185,13 +183,18 @@ class BandungSubmissionController extends Controller
 
             $fileName = 'RESULT-SI-' . $request->result . '.png';
             $filePath = public_path('images/pristime/results/' . $fileName);
+            $base64 = base64_encode(file_get_contents($filePath));
 
+            $response = [
+                'code' => 200,
+                'message' => 'Success.',
+                'result' => [
+                    'image' => $base64,
+                    'filename' => $fileName
+                ]
+            ];
 
-            header('Content-Type: image/png');
-            header('Content-Disposition: attachment; filename=' . $fileName);
-            header('Pragma: public');
-            header('Expires: 0');
-            readfile($filePath);
+            return response()->json($response);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
