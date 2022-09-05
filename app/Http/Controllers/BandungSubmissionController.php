@@ -199,4 +199,40 @@ class BandungSubmissionController extends Controller
             throw new Exception($e->getMessage());
         }
     }
+
+    public function decryptTable()
+    {
+        DB::beginTransaction();
+
+        try {
+            $submissions = BandungSubmission::all();
+            $mappedSubmissions = $submissions->map(function ($row) {
+                $data = [
+                    'id' => $row->id,
+                    'data' => [
+                        'nik' => Crypt::decryptString($row->nik),
+                        'phone' => Crypt::decryptString($row->phone)
+                    ]
+                ];
+
+                return $data;
+            })->values()->all();
+
+            foreach ($mappedSubmissions as $submission) {
+                DB::table('bandung_submissions')->where('id', $submission['id'])->update($submission['data']);
+            }
+
+            DB::commit();
+
+            $response = [
+                'message' => 'Successfully updated ' . count($mappedSubmissions) . ' data.',
+            ];
+
+            return response()->json($response);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            throw new Exception($e->getMessage());
+        }
+    }
 }
