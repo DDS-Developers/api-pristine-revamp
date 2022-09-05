@@ -11,7 +11,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
@@ -24,8 +23,6 @@ class BandungSubmissionController extends Controller
 
         try {
             $data = $request->validated();
-            $data['nik'] = Crypt::encryptString($request->nik);
-            $data['phone'] = Crypt::encryptString($request->phone);
 
             $token = BandungSubmissionToken::where('token', $data['token'])->first();
 
@@ -205,7 +202,7 @@ class BandungSubmissionController extends Controller
         DB::beginTransaction();
 
         try {
-            $submissions = BandungSubmission::all();
+            $submissions = BandungSubmission::where('id', '>=', 139)->get();
             $mappedSubmissions = $submissions->map(function ($row) {
                 $data = [
                     'id' => $row->id,
