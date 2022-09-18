@@ -34,6 +34,9 @@ Route::group(['prefix' => 'bandung_submission'], function () {
 
 Route::group(['prefix' => 'admin'], function () {
     Route::post('login', 'AuthController@login')->name('login');
+
+    // User resources
+    Route::resource('users', 'UserController');
 });
 
 Route::group(['prefix' => 'location'], function () {
