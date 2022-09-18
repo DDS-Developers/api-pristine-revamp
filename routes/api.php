@@ -37,10 +37,10 @@ Route::group(['prefix' => 'admin'], function () {
 
     // User resources
     Route::resource('users', 'UserController');
-});
 
-// Pristime photo resources
-Route::resource('pristime_photos', 'PristimePhotoController');
+    // Pristime photo resources
+    Route::resource('pristime_photos', 'PristimePhotoController');
+});
 
 Route::group(['prefix' => 'location'], function () {
     Route::get('province', [LocationController::class, 'province']);
