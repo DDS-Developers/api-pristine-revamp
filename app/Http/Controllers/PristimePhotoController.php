@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Bandung\PristimePhotoAlbumRequest;
+use App\Http\Requests\Bandung\PristimeSendPhotoRequest;
 use App\Http\Response\PristimePhotoTransformer;
 use App\Models\PristimePhotoAlbum;
 use App\Models\PristimePhotoAlbumContent;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
+use ZipArchive;
 
 class PristimePhotoController extends Controller
 {
@@ -191,6 +193,33 @@ class PristimePhotoController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public function downloadPhoto(PristimeSendPhotoRequest $request)
+    {
+        try {
+            $albumContents = PristimePhotoAlbumContent::whereIn('id', $request->photos)->pluck('clean_file_path');
+            $zipName = str_replace(' ', '-', $request->name) . '-pristime-photos.zip';
+            $zipPath = storage_path('app/public/pristime_photo_zips/' . $zipName);
+
+            $zip = new ZipArchive;
+
+            if ($zip->open($zipPath, ZipArchive::CREATE)) {
+                foreach ($albumContents as $content) {
+                    $cleanFilePath = substr($content, 8);
+                    $fileName = substr($content, 31);
+                    $filePath = storage_path('app/public/' . $cleanFilePath);
+
+                    $zip->addFile($filePath, $fileName);
+                }
+
+                $zip->close();
+            }
+
+            return response()->download($zipPath, $zipName)->deleteFileAfterSend();
+        } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
     }

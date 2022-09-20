@@ -4,7 +4,7 @@ namespace App\Http\Requests\Bandung;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PristimePhotoAlbumRequest extends FormRequest
+class PristimeSendPhotoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,9 @@ class PristimePhotoAlbumRequest extends FormRequest
     public function rules()
     {
         return [
-            'album_date' => 'required|date_format:Y-m-d',
+            'name' => 'required',
+            'email' => 'required|email',
+            'phone' => 'required',
             'photos' => 'required|array'
         ];
     }

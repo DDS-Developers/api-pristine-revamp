@@ -42,6 +42,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::resource('pristime_photos', 'PristimePhotoController');
 });
 
+// Pristime Photo
+Route::post('/pristime_photos/download', 'PristimePhotoController@downloadPhoto');
+//
+
 Route::group(['prefix' => 'location'], function () {
     Route::get('province', [LocationController::class, 'province']);
     Route::get('city', [LocationController::class, 'city']);
