@@ -17,6 +17,7 @@ class CreatePristimePhotoAlbumContentsTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('pristime_photo_album_id');
             $table->text('file_path');
+            $table->text('clean_file_path');
             $table->timestamps();
         });
     }

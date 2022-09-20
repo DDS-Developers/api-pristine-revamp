@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\Facades\Image;
 
 class PristimePhotoController extends Controller
 {
@@ -23,15 +24,14 @@ class PristimePhotoController extends Controller
     public function index(Request $request)
     {
         try {
-            $startDate = Carbon::today()->addWeeks(-1);
-            $endDate = Carbon::today();
+            $albums = PristimePhotoAlbum::withCount('pristimePhotoAlbumContents');
 
             if ($request->has('start_date') && $request->has('end_date')) {
                 $startDate = Carbon::parse($request->start_date);
                 $endDate = Carbon::parse($request->end_date);
-            }
 
-            $albums = PristimePhotoAlbum::withCount('pristimePhotoAlbumContents')->whereDate('album_date', '>=', $startDate)->whereDate('album_date', '<=', $endDate);
+                $albums = $albums->whereDate('album_date', '>=', $startDate)->whereDate('album_date', '<=', $endDate);
+            }
 
             if ($request->has('all')) {
                 $albums = $albums->get();
@@ -126,6 +126,31 @@ class PristimePhotoController extends Controller
             $album->album_date = Carbon::parse($request->album_date);
             $album->save();
 
+            $unchangedPhotos = collect($request->photos)->filter(function ($row) {
+                $check = explode(':', $row)[0];
+
+                if ($check == 'http' || $check == 'https') {
+                    return $row;
+                }
+            })->values();
+            $mappedUnchangedPhotos = $unchangedPhotos->map(function ($row) {
+                $rowArray = explode('/', $row);
+
+                unset($rowArray[0]);
+                unset($rowArray[1]);
+                unset($rowArray[2]);
+
+                $newPath = '/' . implode('/', $rowArray);
+
+                return $newPath;
+            })->values()->all();
+
+            $changedPhotos = PristimePhotoAlbumContent::where('pristime_photo_album_id', $id)->whereNotIn('file_path', $mappedUnchangedPhotos)->get();
+
+            $this->deletePhoto($changedPhotos);
+
+            PristimePhotoAlbumContent::where('pristime_photo_album_id', $id)->whereNotIn('file_path', $mappedUnchangedPhotos)->delete();
+
             foreach ($request->photos as $photo) {
                 $this->storePhoto($album, $photo);
             }
@@ -149,8 +174,12 @@ class PristimePhotoController extends Controller
         DB::beginTransaction();
 
         try {
-            PristimePhotoAlbum::find($id)->delete();
+            $albumContents = PristimePhotoAlbumContent::where('pristime_photo_album_id', $id)->get();
+
+            $this->deletePhoto($albumContents);
+
             PristimePhotoAlbumContent::where('pristime_photo_album_id', $id)->delete();
+            PristimePhotoAlbum::find($id)->delete();
 
             DB::commit();
 
@@ -171,18 +200,46 @@ class PristimePhotoController extends Controller
         switch (explode(':', $photo)[0]) {
             case 'data':
                 $extension = explode('/', mime_content_type($photo))[1];
-                $fileName = 'pristime_photos_' . Str::uuid() . '.' . $extension;
+                $fileName = 'pristime_photo_' . Str::uuid() . '.' . $extension;
+                $cleanFileName = 'clean_pristime_photo_' . Str::uuid() . '.' . $extension;
                 $fullPath = 'public/pristime_photos/' . $fileName;
+                $cleanFullPath = 'public/clean_pristime_photos/' . $cleanFileName;
                 $base64 = explode(',', $photo)[1];
 
-                Storage::put($fullPath, base64_decode($base64));
+                $image = Image::make($base64);
+                $watermark = Image::make(public_path('images/pristime/pristime-watermark.png'));
+                $watermark->opacity(50);
+
+                $image->insert($watermark, 'center');
+                $image->insert($watermark, 'top-left');
+                $image->insert($watermark, 'top-right');
+                $image->insert($watermark, 'bottom-left');
+                $image->insert($watermark, 'bottom-right');
+                $image->save(storage_path('app/' . $fullPath));
+
+                Storage::put($cleanFullPath, base64_decode($base64));
 
                 $url = Storage::url($fullPath);
+                $cleanUrl = Storage::url($cleanFullPath);
 
                 $albumContents = new PristimePhotoAlbumContent;
                 $albumContents->pristime_photo_album_id = $album->id;
                 $albumContents->file_path = $url;
+                $albumContents->clean_file_path = $cleanUrl;
                 $albumContents->save();
         }
+    }
+
+    private function deletePhoto($model)
+    {
+        $mappedChangedFilePath = $model->map(function ($row) {
+            return 'public' . substr($row->file_path, 8);
+        })->values()->all();
+        $mappedChangedCleanFilePath = $model->map(function ($row) {
+            return 'public' . substr($row->clean_file_path, 8);
+        })->values()->all();
+        $mergedChanged = array_merge($mappedChangedFilePath, $mappedChangedCleanFilePath);
+
+        Storage::delete($mergedChanged);
     }
 }
