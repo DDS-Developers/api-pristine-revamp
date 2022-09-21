@@ -43,6 +43,8 @@ Route::group(['prefix' => 'admin'], function () {
 });
 
 // Pristime Photo
+Route::get('/pristime_photos', 'PristimePhotoController@index');
+Route::get('/pristime_photos/{id}', 'PristimePhotoController@show');
 Route::post('/pristime_photos/download', 'PristimePhotoController@downloadPhoto');
 //
 

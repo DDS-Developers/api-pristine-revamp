@@ -54,6 +54,27 @@ class PristimePhotoTransformer
         return response()->json($response);
     }
 
+    public static function download($data, $message = 'Success')
+    {
+        $response = [
+            'message' => $message,
+            'result' => [
+                'url' => $data
+            ]
+        ];
+
+        return response()->json($response);
+    }
+
+    public static function destroy($message = 'Success')
+    {
+        $response = [
+            'message' => $message
+        ];
+
+        return response()->json($response);
+    }
+
     private static function reformAlbum($data)
     {
         $mappedPhotos = $data->pristimePhotoAlbumContents->map(function ($row) {

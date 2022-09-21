@@ -38,7 +38,7 @@ class PristimePhotoController extends Controller
             if ($request->has('all')) {
                 $albums = $albums->get();
             } else {
-                $albums = $albums->paginate(10);
+                $albums = $albums->paginate(50);
             }
 
             return PristimePhotoTransformer::albums($albums);
@@ -185,11 +185,7 @@ class PristimePhotoController extends Controller
 
             DB::commit();
 
-            $response = [
-                'message' => 'Success'
-            ];
-
-            return response()->json($response);
+            return PristimePhotoTransformer::destroy();
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -200,7 +196,18 @@ class PristimePhotoController extends Controller
     public function downloadPhoto(PristimeSendPhotoRequest $request)
     {
         try {
-            $albumContents = PristimePhotoAlbumContent::whereIn('id', $request->photos)->pluck('clean_file_path');
+            $mappedPhotos = collect($request->photos)->map(function ($row) {
+                $rowArray = explode('/', $row);
+
+                unset($rowArray[0]);
+                unset($rowArray[1]);
+                unset($rowArray[2]);
+
+                $newRow = '/' . implode('/', $rowArray);
+
+                return $newRow;
+            })->values()->all();
+            $albumContents = PristimePhotoAlbumContent::whereIn('file_path', $mappedPhotos)->pluck('clean_file_path');
             $zipName = str_replace(' ', '-', $request->name) . '-pristime-photos.zip';
             $zipPath = storage_path('app/public/pristime_photo_zips/' . $zipName);
 
@@ -218,7 +225,9 @@ class PristimePhotoController extends Controller
                 $zip->close();
             }
 
-            return response()->download($zipPath, $zipName)->deleteFileAfterSend();
+            $fileUrl = url(Storage::url('public/pristime_photo_zips/' . $zipName));
+
+            return PristimePhotoTransformer::download($fileUrl);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
