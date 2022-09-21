@@ -24,7 +24,7 @@ class PristimePhotoAlbumRequest extends FormRequest
     public function rules()
     {
         return [
-            'album_date' => 'required|date_format:Y-m-d',
+            'album_date' => 'required|date_format:Y-m-d|unique:pristime_photo_albums,album_date',
             'photos' => 'required|array'
         ];
     }
