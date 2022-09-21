@@ -65,6 +65,8 @@ class PristimePhotoController extends Controller
      */
     public function store(PristimePhotoAlbumRequest $request)
     {
+        set_time_limit(120);
+
         DB::beginTransaction();
 
         try {
@@ -121,6 +123,8 @@ class PristimePhotoController extends Controller
      */
     public function update(Request $request, $id)
     {
+        set_time_limit(120);
+
         DB::beginTransaction();
 
         try {
@@ -235,8 +239,6 @@ class PristimePhotoController extends Controller
 
     private function storePhoto($album, $photo)
     {
-        set_time_limit(120);
-
         switch (explode(':', $photo)[0]) {
             case 'data':
                 $extension = explode('/', mime_content_type($photo))[1];
