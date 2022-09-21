@@ -235,6 +235,8 @@ class PristimePhotoController extends Controller
 
     private function storePhoto($album, $photo)
     {
+        set_time_limit(120);
+
         switch (explode(':', $photo)[0]) {
             case 'data':
                 $extension = explode('/', mime_content_type($photo))[1];
