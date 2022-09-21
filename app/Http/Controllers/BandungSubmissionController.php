@@ -39,7 +39,7 @@ class BandungSubmissionController extends Controller
 
             $total = BandungSubmission::count();
 
-            if ($total > 1500) {
+            if ($total > 5000) {
                 throw new Exception('Mohon maaf kuota telah habis.');
             }
 
