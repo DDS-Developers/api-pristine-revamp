@@ -24,6 +24,7 @@ Route::group(['prefix' => 'bandung_submission'], function () {
     Route::get('/get_total', 'BandungSubmissionController@getTotal');
     Route::get('/download_result_image', 'BandungSubmissionController@downloadResultImage');
     Route::get('/decrypt_table', 'BandungSubmissionController@decryptTable');
+    Route::get('/send_invitation_mail', 'BandungSubmissionController@sendInvitationMail');
     Route::post('/', 'BandungSubmissionController@create');
 
     Route::group(['middleware' => 'auth'], function () {

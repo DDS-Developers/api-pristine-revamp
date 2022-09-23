@@ -7,10 +7,12 @@ use App\Models\BandungSubmissionToken;
 use App\Http\Requests\Bandung\BandungSubmissionRequest;
 use App\Http\Requests\Bandung\EventCheckinRequest;
 use App\Mail\BandungSubmissionMail;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
@@ -230,6 +232,47 @@ class BandungSubmissionController extends Controller
             DB::rollBack();
 
             throw new Exception($e->getMessage());
+        }
+    }
+
+    public function sendInvitationMail()
+    {
+        try {
+            $startDate = Carbon::today()->addDays(-7)->startOfDay();
+            $endDate = Carbon::today()->endOfDay();
+            $submissions = BandungSubmission::whereDate('created_at', '>=', $startDate)->whereDate('created_at', '<=', $endDate)->get();
+
+            foreach ($submissions as $submission) {
+                $this->generateInvitationImage($submission);
+
+                Mail::to($submission->email)->queue(new BandungSubmissionMail($submission));
+            }
+
+            return response()->json('Emails sent successfully.');
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    private function generateInvitationImage($submission)
+    {
+        if (File::exists(public_path('images/pristime/banners/' . $submission->unique_code . '.jpg')) == false) {
+            $newBanner = Image::make(public_path('images/pristime/pristime-email-banner.jpg'));
+            $newBanner->text($submission->unique_code, 300, 190, function ($font) {
+                $font->file(public_path('fonts/Quicksand-Bold.ttf'));
+                $font->size(32);
+                $font->color('#2eb5a9');
+                $font->align('center');
+                $font->valign('middle');
+            });
+            $newBanner->text($submission->name, 300, 340, function ($font) {
+                $font->file(public_path('fonts/Quicksand-Bold.ttf'));
+                $font->size(64);
+                $font->color('#2eb5a9');
+                $font->align('center');
+                $font->valign('middle');
+            });
+            $newBanner->save(public_path('images/pristime/banners/' . $submission->unique_code . '.jpg'));
         }
     }
 }
