@@ -35,7 +35,7 @@ class PristimePhotoController extends Controller
                 $albums = $albums->whereDate('album_date', '>=', $startDate)->whereDate('album_date', '<=', $endDate);
             }
 
-            $albums = $albums->sortBy('album_date');
+            $albums = $albums->orderBy('album_date');
 
             if ($request->has('all')) {
                 $albums = $albums->get();
