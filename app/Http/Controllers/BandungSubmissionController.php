@@ -235,7 +235,7 @@ class BandungSubmissionController extends Controller
         }
     }
 
-    public function sendInvitationMail()
+    public function sendBulkInvitationMail()
     {
         try {
             $startDate = Carbon::today()->addDays(-7)->startOfDay();
@@ -249,6 +249,21 @@ class BandungSubmissionController extends Controller
             }
 
             return response()->json('Emails sent successfully.');
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public function sendInvitationMail(Request $request)
+    {
+        try {
+            $submission = BandungSubmission::where('email', $request->email)->first();
+
+            $this->generateInvitationImage($submission);
+
+            Mail::to($submission->email)->queue(new BandungSubmissionMail($submission));
+
+            return response()->json('Email sent successfully.');
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
