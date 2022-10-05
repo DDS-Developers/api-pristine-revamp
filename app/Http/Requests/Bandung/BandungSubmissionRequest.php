@@ -25,7 +25,7 @@ class BandungSubmissionRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'nik' => 'required|unique:bandung_submissions',
+            'nik' => 'required|unique:bandung_submissions|numeric',
             'email' => 'required|unique:bandung_submissions|email',
             'city' => 'required',
             'postal_code' => 'required',

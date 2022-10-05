@@ -45,6 +45,12 @@ class BandungSubmissionController extends Controller
                 throw new Exception('Mohon maaf kuota telah habis.');
             }
 
+            $todaysTotal = BandungSubmission::whereDate('created_at', '>=', Carbon::today()->startOfDay())->whereDate('created_at', '<=', Carbon::today()->endOfDay())->count();
+
+            if ($todaysTotal > 100) {
+                throw new Exception('Mohon maaf kuota telah habis.');
+            }
+
             $submission = new BandungSubmission();
             $submission->fill($data);
             $submission->save();
