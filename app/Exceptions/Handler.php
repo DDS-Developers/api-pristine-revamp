@@ -70,7 +70,6 @@ class Handler extends ExceptionHandler
         return response()->json([
             'code' => $code,
             'message' => $message,
-            'result' => NULL
         ], $code);
     }
 }

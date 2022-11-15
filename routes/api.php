@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\PromoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,4 +55,11 @@ Route::group(['prefix' => 'location'], function () {
     Route::get('city', [LocationController::class, 'city']);
     Route::get('district', [LocationController::class, 'district']);
     Route::get('sub_district', [LocationController::class, 'subDistrict']);
+});
+
+Route::group(['prefix' => 'promo', 'as' => 'promo.'], function () {
+    Route::get('/', [PromoController::class, 'index'])->name('list');
+    Route::post('create', [PromoController::class, 'create'])->name('create');
+    Route::post('{promo}/update', [PromoController::class, 'update'])->name('update');
+    Route::delete('{promo}/delete', [PromoController::class, 'delete'])->name('delete');
 });
