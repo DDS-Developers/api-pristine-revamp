@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Cache;
+use App\Models\Promo;
 /*
 |--------------------------------------------------------------------------
 | Web Routes

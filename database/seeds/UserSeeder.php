@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\User;
 use Illuminate\Support\Facades\Hash;
+use App\Enums\RoleEnum;
 
 class UserSeeder extends Seeder
 {
@@ -13,11 +14,15 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        User::firstOrcreate([
-            'name' => 'admin',
-            'email' => 'admin@mail.com'
-        ], [
-            'password' => Hash::make('admin'),
+        factory(App\User::class)->create([
+            'email' => 'admin@mail.com',
+            'role' => RoleEnum::Admin
+        ]);
+
+        factory(App\User::class)->create([
+            'email' => 'customer@mail.com',
+            'role' => RoleEnum::Customer,
+            'password' => Hash::make('customer')
         ]);
     }
 }
