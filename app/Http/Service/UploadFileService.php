@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class UploadFileService
 {
-    public function uploadImageFromFile($file, $uploadDestination, $width = 500, $height = 500)
+    public function uploadImageFromFile($file, $uploadDestination)
     {
 
         $fileName = $uploadDestination . Str::uuid()  . '.' . $file->getClientOriginalExtension();

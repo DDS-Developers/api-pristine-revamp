@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PromoController;
-
+use App\Http\Controllers\ArticleController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -62,4 +62,11 @@ Route::group(['prefix' => 'promo', 'as' => 'promo.'], function () {
     Route::post('create', [PromoController::class, 'create'])->name('create');
     Route::post('{promo}/update', [PromoController::class, 'update'])->name('update');
     Route::delete('{promo}/delete', [PromoController::class, 'delete'])->name('delete');
+});
+
+Route::group(['prefix' => 'article', 'as' => 'article.'], function () {
+    Route::get('/', [ArticleController::class, 'index'])->name('list');
+    Route::post('create', [ArticleController::class, 'create'])->name('create');
+    Route::post('{article}/update', [ArticleController::class, 'update'])->name('update');
+    Route::delete('{article}/delete', [ArticleController::class, 'delete'])->name('delete');
 });

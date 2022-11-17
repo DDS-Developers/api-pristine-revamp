@@ -9,4 +9,5 @@ class UploadFileFolderEnum
 
     const PromoImage = 'public/promo_image/';
 
+    const ArticleBanner = 'public/article_banner/';
 }

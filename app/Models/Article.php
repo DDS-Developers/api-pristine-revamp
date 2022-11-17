@@ -4,30 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
-use App\Enums\PromoStatusEnum;
 
-class Promo extends Model
+class Article extends Model
 {
-    const tableName = 'promo_voucher';
+    const tableName = 'articles';
 
-    protected $table = 'promo_voucher';
+    protected $table = 'articles';
 
     protected $fillable = [
-        'promo_title',
-        'start_date',
-        'end_date',
-        'voucher_code',
-        'promo_thumbnail',
-        'promo_image',
-        'terms_cond',
-        'galon',
-        'refill_galon',
-        'botol_15lt',
-        'botol_600ml',
-        'botol_400ml',
+        'title',
+        'slug',
+        'banner',
+        'content',
         'status',
-        'max_redeem',
-        'total_redeem'
+        'published_at',
+        'meta_title',
+        'meta_description'
     ];
 
     public function getColumn()
@@ -35,7 +27,6 @@ class Promo extends Model
         $table = $this->getTable();
         return Schema::getColumnListing($table);
     }
-
 
     public function scopeOrder($q, $request)
     {
@@ -61,20 +52,5 @@ class Promo extends Model
             return $q->get();
         }
         return $q->paginate($request->input('per_page', 10));
-    }
-
-    public function getPromoThumbnailAttribute($v)
-    {
-        if ($v !== NULL) {
-            $v = asset($v);
-        }
-        return $v;
-    }
-    public function getPromoImagesAttribute($v)
-    {
-        if ($v !== NULL) {
-            $v = asset($v);
-        }
-        return $v;
     }
 }

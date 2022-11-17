@@ -103,6 +103,7 @@ class PromoService
             $uploadFileService->deleteFile($promo->getOriginal('promo_thumbnail'));
             $uploadFileService->deleteFile($promo->getOriginal('promo_image'));
             $promo->delete();
+            DB::commit();
             return $promo;
         } catch (\Exception $e) {
             DB::rollBack();
