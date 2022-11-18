@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 use App\Enums\RoleEnum;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
@@ -14,15 +15,6 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\User::class)->create([
-            'email' => 'admin@mail.com',
-            'role' => RoleEnum::Admin
-        ]);
-
-        factory(App\User::class)->create([
-            'email' => 'customer@mail.com',
-            'role' => RoleEnum::Customer,
-            'password' => Hash::make('customer')
-        ]);
+        factory(App\User::class, 5)->create();
     }
 }

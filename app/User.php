@@ -9,6 +9,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
+    const tableName = 'users';
     use Notifiable;
 
     /**
@@ -44,5 +45,13 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function getAvatarAttribute($v)
+    {
+        if ($v !== NULL) {
+            return asset($v);
+        }
+        return asset('images/avatar_placeholder.png');;
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
+
 use App\User;
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
@@ -20,10 +21,11 @@ use App\Enums\RoleEnum;
 
 $factory->define(User::class, function (Faker $faker) {
     return [
-        'name' => $faker->name,
+        'username' => $faker->word(),
+        'fullname' => $faker->name,
+        'phone' => $faker->phoneNumber(),
         'email' => $faker->unique()->safeEmail,
-        'email_verified_at' => now(),
+        'role' => RoleEnum::getRandomData(),
         'password' => Hash::make('password'),
-        'role' => RoleEnum::Admin,
     ];
 });
